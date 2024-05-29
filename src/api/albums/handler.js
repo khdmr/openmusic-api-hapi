@@ -25,11 +25,9 @@ class AlbumsHandler {
   }
 
   async getAlbumByIdHandler(request, h) {
-    this._validator.validateAlbumPayload(request.payload);
-
     const { id: albumId } = request.params;
 
-    const album = this._service.getAlbumById(albumId);
+    const album = await this._service.getAlbumById(albumId);
 
     const response = h.response({
       status: 'success',
