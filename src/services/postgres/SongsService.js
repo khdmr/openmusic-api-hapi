@@ -14,7 +14,7 @@ class SongsService {
       values: [songId, title, year, genre, performer, duration, albumId],
     };
 
-    const result = this._pool.query(query);
+    const result = await this._pool.query(query);
 
     if (!result.rows[0].id) {
       throw new InvariantError('Lagu gagal ditambahkan');
