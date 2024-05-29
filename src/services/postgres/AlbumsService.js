@@ -10,7 +10,7 @@ class AlbumsService {
     const albumId = `album-${nanoid(16)}`;
 
     const query = {
-      text: 'INSERT INTO albums VALUES($) RETURNING id',
+      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id',
       values: [albumId, name, year],
     };
 
