@@ -7,29 +7,20 @@ class AlbumsHandler {
   }
 
   async postAlbumHandler(request, h) {
-    try {
-      this._validator.validateAlbumPayload(request.payload);
-      const { name, year } = request.payload;
+    this._validator.validateAlbumPayload(request.payload);
+    const { name, year } = request.payload;
 
-      const albumId = await this._service.addAlbum(name, year);
+    const albumId = await this._service.addAlbum(name, year);
 
-      const response = h.response({
-        status: 'success',
-        data: {
-          albumId,
-        },
-      });
+    const response = h.response({
+      status: 'success',
+      data: {
+        albumId,
+      },
+    });
 
-      response.code(201);
-      return response;
-    } catch (error) {
-      const response = h.response({
-        status: 'fail',
-        message: error.message,
-      });
-      response.code(400);
-      return response;
-    }
+    response.code(201);
+    return response;
   }
 }
 
