@@ -5,6 +5,7 @@ class AlbumsHandler {
 
     this.postAlbumHandler = this.postAlbumHandler.bind(this);
     this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
+    this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
   }
 
   async postAlbumHandler(request, h) {
@@ -46,7 +47,7 @@ class AlbumsHandler {
     const { name, year } = request.payload;
     const { id: albumId } = request.params;
 
-    await this._service.getAlbumById(albumId, { name, year });
+    await this._service.editAlbumById(albumId, { name, year });
 
     const response = h.response({
       status: 'success',
