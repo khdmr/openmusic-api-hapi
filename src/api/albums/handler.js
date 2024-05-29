@@ -6,6 +6,7 @@ class AlbumsHandler {
     this.postAlbumHandler = this.postAlbumHandler.bind(this);
     this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
     this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
+    this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this);
   }
 
   async postAlbumHandler(request, h) {
@@ -52,6 +53,20 @@ class AlbumsHandler {
     const response = h.response({
       status: 'success',
       message: 'Album berhasi diperbarui',
+    });
+
+    response.code(200);
+    return response;
+  }
+
+  async deleteAlbumByIdHandler(request, h) {
+    const { id: albumId } = request.params;
+
+    await this._service.deleteAlbumById(albumId);
+
+    const response = h.response({
+      status: 'success',
+      message: 'Album berhasi dihapus',
     });
 
     response.code(200);
