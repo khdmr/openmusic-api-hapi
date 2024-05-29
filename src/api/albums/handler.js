@@ -1,12 +1,14 @@
 class AlbumsHandler {
-  constructor(service) {
+  constructor(service, validator) {
     this._service = service;
+    this._validator = validator;
 
     this.postAlbumHandler = this.postAlbumHandler.bind(this);
   }
 
   async postAlbumHandler(request, h) {
     try {
+      this._validator.validateAlbumPayload(request.payload);
       const { name, year } = request.payload;
 
       const albumId = await this._service.addAlbum(name, year);
