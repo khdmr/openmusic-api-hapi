@@ -1,6 +1,8 @@
 class AlbumsHandler {
   constructor(service) {
     this._service = service;
+
+    this.postAlbumHandler = this.postAlbumHandler.bind(this);
   }
 
   async postAlbumHandler(request, h) {
