@@ -39,6 +39,23 @@ class AlbumsHandler {
     response.code(200);
     return response;
   }
+
+  async putAlbumByIdHandler(request, h) {
+    this._validator.validateAlbumPayload(request.payload);
+
+    const { name, year } = request.payload;
+    const { id: albumId } = request.params;
+
+    await this._service.getAlbumById(albumId, { name, year });
+
+    const response = h.response({
+      status: 'success',
+      message: 'Album berhasi diperbarui',
+    });
+
+    response.code(200);
+    return response;
+  }
 }
 
 module.exports = AlbumsHandler;
