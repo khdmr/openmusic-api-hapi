@@ -6,6 +6,7 @@ class SongsHandler {
     this.postSongHandler = this.postSongHandler.bind(this);
     this.getSongsHandler = this.getSongsHandler.bind(this);
     this.getSongByIdHandler = this.getSongByIdHandler.bind(this);
+    this.putSongByIdHandler = this.putSongByIdHandler.bind(this);
   }
 
   async postSongHandler(request, h) {
@@ -64,6 +65,38 @@ class SongsHandler {
       data: {
         song,
       },
+    });
+
+    response.code(200);
+    return response;
+  }
+
+  async putSongByIdHandler(request, h) {
+    this._validator.validateSongPayload(request.payload);
+
+    const { id: songId } = request.params;
+    const
+      {
+        title,
+        year,
+        performer,
+        genre,
+        duration,
+        albumId,
+      } = request.payload;
+
+    await this._service.editSongById(songId, {
+      title,
+      year,
+      performer,
+      genre,
+      duration,
+      albumId,
+    });
+
+    const response = h.response({
+      status: 'success',
+      message: 'Lagu berhasil diperbarui',
     });
 
     response.code(200);
