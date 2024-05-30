@@ -44,6 +44,33 @@ class SongsService {
 
     return result.rows[0];
   }
+
+  async editSongById(songId, {
+    title, year, genre, performer, duration, albumId,
+  }) {
+    const query = {
+      text: `
+      UPDATE 
+        songs 
+      SET
+        title = $1,
+        year = $2,
+        genre = $3,
+        performer = $4,
+        duration = $5,
+        "albumId" = $6
+      WHERE 
+        id = $7
+      `,
+      values: [title, year, genre, performer, duration, albumId, songId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Gagal memperbarui Lagu. Id tidak ditemukan');
+    }
+  }
 }
 
 module.exports = SongsService;
