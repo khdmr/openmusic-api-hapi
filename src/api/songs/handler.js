@@ -14,8 +14,8 @@ class SongsHandler {
     const {
       title,
       year,
-      genre,
       performer,
+      genre,
       duration,
       albumId,
     } = request.payload;
