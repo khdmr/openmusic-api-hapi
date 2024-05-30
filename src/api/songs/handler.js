@@ -23,8 +23,8 @@ class SongsHandler {
     const songId = await this._service.addSong(
       title,
       year,
-      genre,
       performer,
+      genre,
       duration,
       albumId,
     );
