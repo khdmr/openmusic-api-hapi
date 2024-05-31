@@ -46,7 +46,7 @@ class PlaylistsService {
     return result.rows;
   }
 
-  async deletePlaylistById({ playlistId, userId }) {
+  async deletePlaylistById({ playlistId }) {
     const query = {
       text: `
       DELETE FROM 
@@ -54,7 +54,7 @@ class PlaylistsService {
       WHERE 
         id = $1
       `,
-      values: [playlistId, userId],
+      values: [playlistId],
     };
     const result = await this._pool.query(query);
 
