@@ -8,7 +8,7 @@ class PlaylistsHandler {
     this.getPlaylistsHandler = this.getPlaylistsHandler.bind(this);
     this.deletePlaylistByIdHandler = this.deletePlaylistByIdHandler.bind(this);
     this.postPlaylistSongHandler = this.postPlaylistSongHandler.bind(this);
-    this.getPlaylistSongHandler = this.getPlaylistSongHandler.bind(this);
+    this.getPlaylistSongsHandler = this.getPlaylistSongsHandler.bind(this);
     this.deletePlaylistSongHandler = this.deletePlaylistSongHandler.bind(this);
   }
 
@@ -80,7 +80,7 @@ class PlaylistsHandler {
     return response;
   }
 
-  async getPlaylistSongHandler(request, h) {
+  async getPlaylistSongsHandler(request, h) {
     const { userId } = request.auth.credentials;
     const { id: playlistId } = request.params;
 
