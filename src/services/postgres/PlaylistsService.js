@@ -1,6 +1,7 @@
 const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 const InvariantError = require('../../exceptions/InvariantError');
+const AuthorizationError = require('../../exceptions/AuthorizationError');
 
 class PlaylistsService {
   constructor() {
@@ -58,6 +59,33 @@ class PlaylistsService {
 
     if (!result.rowCount) {
       throw new InvariantError('Playlist gagal dihapus. Id tidak ditemukan');
+    }
+  }
+
+  async addPlaylistSong({ playlistId, songId }) {
+    const playlistSongId = `playlist_songs-${nanoid(16)}`;
+
+    const query = {
+      text: 'INSERT INTO playlist_songs VALUES($1, $2, $3)',
+      values: [playlistSongId, playlistId, songId],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new InvariantError('Lagu gagal ditambahkan ke playlist');
+    }
+  }
+
+  async verifyPlaylistOwner({ playlistId, userId }) {
+    const query = {
+      text: 'SELECT * FROM playlists WHERE id = $1',
+      values: [playlistId],
+    };
+    const playlist = await this._pool.query(query);
+
+    if (playlist.rows[0].owner !== userId) {
+      throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
     }
   }
 }
