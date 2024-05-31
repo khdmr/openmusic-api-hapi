@@ -11,6 +11,7 @@ class AuthenticationsHandler {
     this._validator = validator;
 
     this.postAuthenticationsHandler = this.postAuthenticationsHandler.bind(this);
+    this.putAuthenticationsHandler = this.putAuthenticationsHandler.bind(this);
   }
 
   async postAuthenticationsHandler(request, h) {
@@ -36,6 +37,26 @@ class AuthenticationsHandler {
       },
     });
     response.code(201);
+    return response;
+  }
+
+  async putAuthenticationsHandler(request, h) {
+    this._validator.validatePutAuthenticationPayload(request.payload);
+
+    const { refreshToken } = request.payload;
+
+    await this._authenticationsService.verifyRefreshToken(refreshToken);
+    const { userId } = await this._tokenManager.verifyRefreshToken(refreshToken);
+
+    const accessToken = this._tokenManager.generateAccessToken({ userId });
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        accessToken,
+      },
+    });
+    response.code(200);
     return response;
   }
 }
