@@ -32,6 +32,23 @@ class PlaylistsService {
 
     return result.rows;
   }
+
+  async deletePlaylistById({ playlistId, userId }) {
+    const query = {
+      text: `
+      DELETE FROM 
+        playlists 
+      WHERE 
+        id = $1
+      `,
+      values: [playlistId, userId],
+    };
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new InvariantError('Playlist gagal dihapus. Id tidak ditemukan');
+    }
+  }
 }
 
 module.exports = PlaylistsService;
