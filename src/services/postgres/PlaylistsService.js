@@ -3,6 +3,7 @@ const { Pool } = require('pg');
 const InvariantError = require('../../exceptions/InvariantError');
 const AuthorizationError = require('../../exceptions/AuthorizationError');
 const { mapDBPlaylistSongsToModel } = require('../../utils');
+const NotFoundError = require('../../exceptions/NotFoundError');
 
 class PlaylistsService {
   constructor() {
@@ -132,7 +133,12 @@ class PlaylistsService {
       text: 'SELECT * FROM playlists WHERE id = $1',
       values: [playlistId],
     };
+
     const playlist = await this._pool.query(query);
+
+    if (!playlist.rowCount) {
+      throw new NotFoundError('Playlist tidak ditemukan');
+    }
 
     if (playlist.rows[0].owner !== userId) {
       throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
