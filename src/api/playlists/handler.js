@@ -8,6 +8,7 @@ class PlaylistsHandler {
     this.getPlaylistsHandler = this.getPlaylistsHandler.bind(this);
     this.deletePlaylistByIdHandler = this.deletePlaylistByIdHandler.bind(this);
     this.postPlaylistSongHandler = this.postPlaylistSongHandler.bind(this);
+    this.getPlaylistSongHandler = this.getPlaylistSongHandler.bind(this);
   }
 
   async postPlaylistHandler(request, h) {
@@ -75,6 +76,24 @@ class PlaylistsHandler {
       message: 'Lagu berhasil ditambahkan ke playlist',
     });
     response.code(201);
+    return response;
+  }
+
+  async getPlaylistSongHandler(request, h) {
+    const { userId } = request.auth.credentials;
+    const { id: playlistId } = request.params;
+
+    await this._playlistsService.verifyPlaylistOwner({ playlistId, userId });
+
+    const playlist = await this._playlistsService.getPlaylistSongs({ playlistId });
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        playlist,
+      },
+    });
+    response.code(200);
     return response;
   }
 }
