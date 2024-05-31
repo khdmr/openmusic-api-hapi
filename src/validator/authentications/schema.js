@@ -5,4 +5,11 @@ const PostAuthenticationPayloadSchema = Joi.object({
   password: Joi.string().required(),
 });
 
-module.exports = PostAuthenticationPayloadSchema;
+const PutAuthenticationPayloadSchema = Joi.object({
+  refreshToken: Joi.string().required(),
+});
+
+module.exports = {
+  PostAuthenticationPayloadSchema,
+  PutAuthenticationPayloadSchema,
+};
