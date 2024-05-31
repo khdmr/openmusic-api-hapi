@@ -24,7 +24,18 @@ class PlaylistsService {
 
   async getPlaylists(userId) {
     const query = {
-      text: 'SELECT id, name, owner as username FROM playlists WHERE owner = $1',
+      text: `
+      SELECT 
+        p.id, p.name, u.username 
+      FROM 
+        playlists p
+      INNER JOIN
+        users u
+      ON
+        p.owner = u.id
+      WHERE 
+        p.owner = $1
+      `,
       values: [userId],
     };
 
