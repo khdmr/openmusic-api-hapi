@@ -5,10 +5,10 @@ class CollaborationsHandler {
     this._collaborationsService = collaborationsService;
     this._validator = validator;
 
-    this.postCollaborationHandler = this.postCollaborationHandler.bind(this);
+    this.postCollaboratorHandler = this.postCollaboratorHandler.bind(this);
   }
 
-  async postCollaborationHandler(request, h) {
+  async postCollaboratorHandler(request, h) {
     this._validator.validateCollaborationPayload(request.payload);
 
     const { userId } = request.auth.credentials;
