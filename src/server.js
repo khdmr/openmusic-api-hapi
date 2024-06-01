@@ -28,6 +28,9 @@ const playlists = require('./api/playlists');
 const PlaylistsService = require('./services/postgres/PlaylistsService');
 const PlaylistsValidator = require('./validator/playlists');
 
+// activities
+const ActivitiesService = require('./services/postgres/ActivitiesService');
+
 // manage jwt token
 const TokenManager = require('./tokenize/TokenManager');
 
@@ -40,6 +43,7 @@ const init = async () => {
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
   const playlistsService = new PlaylistsService();
+  const activitiesService = new ActivitiesService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -109,6 +113,7 @@ const init = async () => {
       options: {
         playlistsService,
         songsService,
+        activitiesService,
         validator: PlaylistsValidator,
       },
     },
