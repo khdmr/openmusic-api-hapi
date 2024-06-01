@@ -11,6 +11,7 @@ class PlaylistsHandler {
     this.postPlaylistSongHandler = this.postPlaylistSongHandler.bind(this);
     this.getPlaylistSongsHandler = this.getPlaylistSongsHandler.bind(this);
     this.deletePlaylistSongHandler = this.deletePlaylistSongHandler.bind(this);
+    this.getPlaylistSongActivitiesHandler = this.getPlaylistSongActivitiesHandler.bind(this);
   }
 
   async postPlaylistHandler(request, h) {
@@ -119,6 +120,21 @@ class PlaylistsHandler {
     const response = h.response({
       status: 'success',
       message: 'Lagu didalam playlist berhasil dihapus',
+    });
+    response.code(200);
+    return response;
+  }
+
+  async getPlaylistSongActivitiesHandler(request, h) {
+    const { userId } = request.auth.credentials;
+    const { id: playlistId } = request.params;
+
+    await this._playlistsService.verifyPlaylistOwner({ playlistId, userId });
+    const activities = await this._activitiesService.getActivities(playlistId);
+
+    const response = h.response({
+      status: 'success',
+      data: activities,
     });
     response.code(200);
     return response;
