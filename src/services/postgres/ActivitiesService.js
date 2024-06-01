@@ -2,7 +2,7 @@ const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 
 const InvariantError = require('../../exceptions/InvariantError');
-const { mapDBActivities } = require('../../utils');
+const { mapDBActivitiesToModel } = require('../../utils');
 
 class ActivitiesService {
   constructor() {
@@ -60,7 +60,7 @@ class ActivitiesService {
 
     const result = await this._pool.query(query);
 
-    const activities = await mapDBActivities(result.rows);
+    const activities = await mapDBActivitiesToModel(result.rows);
 
     return activities;
   }
