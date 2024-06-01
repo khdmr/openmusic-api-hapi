@@ -32,12 +32,18 @@ class PlaylistsService {
         p.id, p.name, u.username 
       FROM 
         playlists p
+      LEFT JOIN
+        collaborations c
+      ON
+        p.id = c.playlist_id
       INNER JOIN
         users u
       ON
         p.owner = u.id
       WHERE 
         p.owner = $1
+      OR
+        c.user_id = $1
       `,
       values: [userId],
     };
