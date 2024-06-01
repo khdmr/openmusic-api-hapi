@@ -1,7 +1,8 @@
 class PlaylistsHandler {
-  constructor(playlistsService, songsService, validator) {
+  constructor(playlistsService, songsService, activitiesService, validator) {
     this._playlistsService = playlistsService;
     this._songsService = songsService;
+    this._activitiesService = activitiesService;
     this._validator = validator;
 
     this.postPlaylistHandler = this.postPlaylistHandler.bind(this);
@@ -73,6 +74,8 @@ class PlaylistsHandler {
 
     await this._playlistsService.addPlaylistSong({ playlistId, songId });
 
+    await this._activitiesService.addActivity(playlistId, songId, userId, 'add');
+
     const response = h.response({
       status: 'success',
       message: 'Lagu berhasil ditambahkan ke playlist',
@@ -110,6 +113,8 @@ class PlaylistsHandler {
     await this._playlistsService.verifyPlaylistOwner({ playlistId, userId });
 
     await this._playlistsService.deletePlaylistSong({ playlistId, songId });
+
+    await this._activitiesService.addActivity(playlistId, songId, userId, 'delete');
 
     const response = h.response({
       status: 'success',
