@@ -24,6 +24,18 @@ class CollaborationsService {
     return result.rows[0].id;
   }
 
+  async deleteCollaboration({ playlistId, userIdCollab }) {
+    const query = {
+      text: 'DELETE FROM collaborations WHERE playlist_id = $1 AND user_id = $2',
+      values: [playlistId, userIdCollab],
+    };
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new InvariantError('kolaborasi gagal dihapus');
+    }
+  }
+
   async verifyCollaborator({ playlistId, userId }) {
     const query = {
       text: 'SELECT * FROM collaborations WHERE playlist_id = $1 AND user_id = $2',
