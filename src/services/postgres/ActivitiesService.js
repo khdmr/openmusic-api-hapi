@@ -2,6 +2,7 @@ const { nanoid } = require('nanoid');
 const { Pool } = require('pg');
 
 const InvariantError = require('../../exceptions/InvariantError');
+const { mapDBActivities } = require('../../utils');
 
 class ActivitiesService {
   constructor() {
@@ -26,6 +27,42 @@ class ActivitiesService {
     if (!result.rowCount) {
       throw new InvariantError('Aktivitas gagal ditambahkan');
     }
+  }
+
+  async getActivities(playlistId) {
+    const query = {
+      text: `
+      SELECT 
+        p.id,
+        u.username,
+        s.title,
+        a.action,
+        a.time
+      FROM
+        playlists p
+      LEFT JOIN
+        activities a
+      ON
+        a.playlist_id = p.id
+      LEFT JOIN
+        users u
+      ON
+        a.user_id = u.id
+      LEFT JOIN
+        songs s
+      ON
+        a.song_id = s.id
+      WHERE
+        p.id = $1
+      `,
+      values: [playlistId],
+    };
+
+    const result = await this._pool.query(query);
+
+    const activities = await mapDBActivities(result.rows);
+
+    return activities;
   }
 }
 
