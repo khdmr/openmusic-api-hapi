@@ -36,6 +36,11 @@ const collaborations = require('./api/collaborations');
 const CollaborationsService = require('./services/postgres/CollaborationsService');
 const CollaborationsValidator = require('./validator/collaborations');
 
+// exports
+const _exports = require('./api/exports');
+const ProducerService = require('./services/rabbitmq/ProducerService');
+const ExportsValidator = require('./validator/exports');
+
 // manage jwt token
 const TokenManager = require('./tokenize/TokenManager');
 
@@ -130,6 +135,14 @@ const init = async () => {
         playlistsService,
         collaborationsService,
         validator: CollaborationsValidator,
+      },
+    },
+    {
+      plugin: _exports,
+      options: {
+        playlistsService,
+        ProducerService,
+        validator: ExportsValidator,
       },
     },
   ]);
