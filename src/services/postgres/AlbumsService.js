@@ -6,8 +6,9 @@ const NotFoundError = require('../../exceptions/NotFoundError');
 const { mapDBAlbumToModel } = require('../../utils');
 
 class AlbumsService {
-  constructor() {
+  constructor(cacheService) {
     this._pool = new Pool();
+    this._cacheService = cacheService;
   }
 
   async addAlbum(name, year) {
@@ -130,20 +131,29 @@ class AlbumsService {
     if (!result.rowCount) {
       throw new NotFoundError('Album tidak ditemukan');
     }
+    await this._cacheService.delete(`albums:${albumId}`);
   }
 
   async getAlbumLikes(albumId) {
-    const query = {
-      text: 'SELECT COUNT(id) FROM user_album_likes WHERE album_id = $1',
-      values: [albumId],
-    };
-    const result = await this._pool.query(query);
+    try {
+      const result = await this._cacheService.get(`albums:${albumId}`);
+      return { likes: parseInt(result, 10), cache: true };
+    } catch (error) {
+      const query = {
+        text: 'SELECT COUNT(id) FROM user_album_likes WHERE album_id = $1',
+        values: [albumId],
+      };
+      const result = await this._pool.query(query);
 
-    if (!result.rowCount) {
-      throw new NotFoundError('Album tidak ditemukan');
+      if (!result.rowCount) {
+        throw new NotFoundError('Album tidak ditemukan');
+      }
+
+      const likes = parseInt(result.rows[0].count, 10);
+      await this._cacheService.set(`albums:${albumId}`, JSON.stringify(likes));
+
+      return { likes, cache: false };
     }
-
-    return result.rows[0].count;
   }
 
   async deleteAlbumLike(albumId, userId) {
@@ -156,6 +166,8 @@ class AlbumsService {
     if (!result.rowCount) {
       throw new NotFoundError('Anda belum menyukai album ini');
     }
+
+    await this._cacheService.delete(`albums:${albumId}`);
   }
 }
 

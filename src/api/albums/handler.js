@@ -119,7 +119,7 @@ class AlbumsHandler {
 
     await this._service.verifyAlbumIsExist(albumId);
 
-    const likes = Number(await this._service.getAlbumLikes(albumId));
+    const { likes, cache } = await this._service.getAlbumLikes(albumId);
 
     const response = h.response({
       status: 'success',
@@ -128,6 +128,11 @@ class AlbumsHandler {
       },
     });
     response.code(200);
+
+    if (cache) {
+      response.header('X-Data-Source', 'cache');
+    }
+    // console.log(response)
     return response;
   }
 
