@@ -103,7 +103,7 @@ class AlbumsHandler {
 
     await this._service.verifyAlbumIsExist(albumId);
 
-    await this._service.verifyAlbumLike(albumId, userId);
+    await this._service.verifyAlreadyLikeAlbum(albumId, userId);
     await this._service.addAlbumLike(albumId, userId);
 
     const response = h.response({
