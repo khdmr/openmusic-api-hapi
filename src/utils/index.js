@@ -27,9 +27,8 @@ const mapDBPlaylistSongsToModel = (playlists) => {
     username: playlists[0].username,
     songs: [],
   };
-
   playlists.forEach((playlist) => {
-    if (playlist.id !== null) {
+    if (playlist.song_id !== null) {
       mapPlaylistSongs.songs.push({
         id: playlist.song_id,
         title: playlist.title,
