@@ -145,6 +145,18 @@ class AlbumsService {
 
     return result.rows[0].count;
   }
+
+  async deleteAlbumLike(albumId, userId) {
+    const query = {
+      text: 'DELETE FROM user_album_likes WHERE user_id = $1 AND album_id = $2',
+      values: [userId, albumId],
+    };
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Anda belum menyukai album ini');
+    }
+  }
 }
 
 module.exports = AlbumsService;
