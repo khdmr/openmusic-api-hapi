@@ -12,6 +12,7 @@ class AlbumsHandler {
 
     this.postAlbumLikeHandler = this.postAlbumLikeHandler.bind(this);
     this.getAlbumLikeHandler = this.getAlbumLikeHandler.bind(this);
+    this.deleteAlbumLikeHandler = this.deleteAlbumLikeHandler.bind(this);
   }
 
   async postAlbumHandler(request, h) {
@@ -125,6 +126,22 @@ class AlbumsHandler {
       data: {
         likes,
       },
+    });
+    response.code(200);
+    return response;
+  }
+
+  async deleteAlbumLikeHandler(request, h) {
+    const { id: albumId } = request.params;
+    const { userId } = request.auth.credentials;
+
+    await this._service.verifyAlbumIsExist(albumId);
+
+    await this._service.deleteAlbumLike(albumId, userId);
+
+    const response = h.response({
+      status: 'success',
+      message: 'Anda batal menyukai album ini',
     });
     response.code(200);
     return response;
