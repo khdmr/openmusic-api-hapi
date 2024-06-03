@@ -9,6 +9,8 @@ class AlbumsHandler {
     this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
     this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this);
     this.postAlbumCoverHandler = this.postAlbumCoverHandler.bind(this);
+
+    this.postAlbumLikeHandler = this.postAlbumLikeHandler.bind(this);
   }
 
   async postAlbumHandler(request, h) {
@@ -88,6 +90,23 @@ class AlbumsHandler {
     const response = h.response({
       status: 'success',
       message: 'Sampul berhasil diunggah',
+    });
+    response.code(201);
+    return response;
+  }
+
+  async postAlbumLikeHandler(request, h) {
+    const { id: albumId } = request.params;
+    const { userId } = request.auth.credentials;
+
+    const albumName = await this._service.verifyAlbumIsExist(albumId);
+
+    await this._service.verifyAlbumLike(albumId, userId);
+    await this._service.addAlbumLike(albumId, userId);
+
+    const response = h.response({
+      status: 'success',
+      message: `Anda menyukai album ${albumName}`,
     });
     response.code(201);
     return response;
