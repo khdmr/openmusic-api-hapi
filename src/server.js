@@ -64,8 +64,8 @@ const init = async () => {
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
   const activitiesService = new ActivitiesService();
-  const collaborationsService = new CollaborationsService();
-  const playlistsService = new PlaylistsService(collaborationsService);
+  const collaborationsService = new CollaborationsService(cacheService);
+  const playlistsService = new PlaylistsService(collaborationsService, cacheService);
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -183,6 +183,7 @@ const init = async () => {
       const newResponse = h.response({
         status: 'error',
         message: 'terjadi kegagalan pada server kami',
+        d: response.message
       });
       newResponse.code(500);
       return newResponse;
