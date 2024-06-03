@@ -131,6 +131,20 @@ class AlbumsService {
       throw new NotFoundError('Album tidak ditemukan');
     }
   }
+
+  async getAlbumLikes(albumId) {
+    const query = {
+      text: 'SELECT COUNT(id) FROM user_album_likes WHERE album_id = $1',
+      values: [albumId],
+    };
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Album tidak ditemukan');
+    }
+
+    return result.rows[0].count;
+  }
 }
 
 module.exports = AlbumsService;
