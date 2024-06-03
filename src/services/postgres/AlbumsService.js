@@ -20,7 +20,7 @@ class AlbumsService {
 
     const result = await this._pool.query(query);
 
-    if (!result.rows[0].id) {
+    if (!result.rowCount) {
       throw new InvariantError('Album gagal ditambahkan');
     }
 
@@ -92,6 +92,45 @@ class AlbumsService {
 
     if (!result.rowCount) {
       throw new NotFoundError('Cover gagal ditambahkan');
+    }
+  }
+
+  async verifyAlbumIsExist(albumId) {
+    const query = {
+      text: 'SELECT * FROM albums WHERE id = $1',
+      values: [albumId],
+    };
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Album tidak ditemukan');
+    }
+
+    return result.rows[0].name;
+  }
+
+  async verifyAlbumLike(albumId, userId) {
+    const query = {
+      text: 'SELECT * FROM user_album_likes WHERE user_id = $1 AND album_id = $2',
+      values: [userId, albumId],
+    };
+    const result = await this._pool.query(query);
+
+    if (result.rowCount) {
+      throw new InvariantError('Anda sudah menyukai album ini');
+    }
+  }
+
+  async addAlbumLike(albumId, userId) {
+    const userAlbumId = `like-${nanoid(16)}`;
+    const query = {
+      text: 'INSERT INTO user_album_likes VALUES($1, $2, $3)',
+      values: [userAlbumId, userId, albumId],
+    };
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Album tidak ditemukan');
     }
   }
 }
