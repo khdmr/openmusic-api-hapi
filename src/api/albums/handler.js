@@ -112,6 +112,23 @@ class AlbumsHandler {
     response.code(201);
     return response;
   }
+
+  async getAlbumLikeHandler(request, h) {
+    const { id: albumId } = request.params;
+
+    await this._service.verifyAlbumIsExist(albumId);
+
+    const likes = Number(await this._service.getAlbumLikes(albumId));
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        likes,
+      },
+    });
+    response.code(200);
+    return response;
+  }
 }
 
 module.exports = AlbumsHandler;
