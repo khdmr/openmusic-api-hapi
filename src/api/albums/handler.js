@@ -132,7 +132,7 @@ class AlbumsHandler {
     if (cache) {
       response.header('X-Data-Source', 'cache');
     }
-    // console.log(response)
+
     return response;
   }
 
