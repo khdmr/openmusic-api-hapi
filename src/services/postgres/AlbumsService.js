@@ -105,8 +105,6 @@ class AlbumsService {
     if (!result.rowCount) {
       throw new NotFoundError('Album tidak ditemukan');
     }
-
-    return result.rows[0].name;
   }
 
   async verifyAlbumLike(albumId, userId) {
