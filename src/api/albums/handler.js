@@ -1,12 +1,18 @@
 class AlbumsHandler {
-  constructor(service, validator) {
+  constructor(service, storageService, validator) {
     this._service = service;
+    this._storageService = storageService;
     this._validator = validator;
 
     this.postAlbumHandler = this.postAlbumHandler.bind(this);
     this.getAlbumByIdHandler = this.getAlbumByIdHandler.bind(this);
     this.putAlbumByIdHandler = this.putAlbumByIdHandler.bind(this);
     this.deleteAlbumByIdHandler = this.deleteAlbumByIdHandler.bind(this);
+    this.postAlbumCoverHandler = this.postAlbumCoverHandler.bind(this);
+
+    this.postAlbumLikeHandler = this.postAlbumLikeHandler.bind(this);
+    this.getAlbumLikesHandler = this.getAlbumLikesHandler.bind(this);
+    this.deleteAlbumLikeHandler = this.deleteAlbumLikeHandler.bind(this);
   }
 
   async postAlbumHandler(request, h) {
@@ -69,6 +75,79 @@ class AlbumsHandler {
       message: 'Album berhasi dihapus',
     });
 
+    response.code(200);
+    return response;
+  }
+
+  async postAlbumCoverHandler(request, h) {
+    const { cover } = request.payload;
+    const { id: albumId } = request.params;
+    this._validator.validateCoverImageHeaders(cover.hapi.headers);
+
+    const filename = await this._storageService.writeFile(cover, cover.hapi);
+
+    const coverUrl = `http://${process.env.HOST}:${process.env.PORT}/albums/${albumId}/images/${filename}`;
+    await this._service.editAlbumCover(albumId, coverUrl);
+
+    const response = h.response({
+      status: 'success',
+      message: 'Sampul berhasil diunggah',
+    });
+    response.code(201);
+    return response;
+  }
+
+  async postAlbumLikeHandler(request, h) {
+    const { id: albumId } = request.params;
+    const { userId } = request.auth.credentials;
+
+    await this._service.verifyAlbumIsExist(albumId);
+
+    await this._service.verifyAlreadyLikeAlbum(albumId, userId);
+    await this._service.addAlbumLike(albumId, userId);
+
+    const response = h.response({
+      status: 'success',
+      message: 'Anda menyukai album ini',
+    });
+    response.code(201);
+    return response;
+  }
+
+  async getAlbumLikesHandler(request, h) {
+    const { id: albumId } = request.params;
+
+    await this._service.verifyAlbumIsExist(albumId);
+
+    const { likes, cache } = await this._service.getAlbumLikes(albumId);
+
+    const response = h.response({
+      status: 'success',
+      data: {
+        likes,
+      },
+    });
+    response.code(200);
+
+    if (cache) {
+      response.header('X-Data-Source', 'cache');
+    }
+    // console.log(response)
+    return response;
+  }
+
+  async deleteAlbumLikeHandler(request, h) {
+    const { id: albumId } = request.params;
+    const { userId } = request.auth.credentials;
+
+    await this._service.verifyAlbumIsExist(albumId);
+
+    await this._service.deleteAlbumLike(albumId, userId);
+
+    const response = h.response({
+      status: 'success',
+      message: 'Anda batal menyukai album ini',
+    });
     response.code(200);
     return response;
   }

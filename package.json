@@ -19,12 +19,15 @@
   },
   "dependencies": {
     "@hapi/hapi": "^21.3.9",
+    "@hapi/inert": "^7.1.0",
     "@hapi/jwt": "^3.2.0",
+    "amqplib": "^0.10.4",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
     "joi": "^17.13.1",
     "nanoid": "^3.3.7",
     "node-pg-migrate": "^7.3.2",
-    "pg": "^8.11.5"
+    "pg": "^8.11.5",
+    "redis": "^4.6.14"
   }
 }

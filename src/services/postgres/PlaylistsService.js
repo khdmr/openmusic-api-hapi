@@ -6,9 +6,10 @@ const { mapDBPlaylistSongsToModel } = require('../../utils');
 const NotFoundError = require('../../exceptions/NotFoundError');
 
 class PlaylistsService {
-  constructor(collaborationsService) {
+  constructor(collaborationsService, cacheService) {
     this._pool = new Pool();
     this._collaborationsService = collaborationsService;
+    this._cacheService = cacheService;
   }
 
   async addPlaylist(userId, { name }) {
@@ -19,42 +20,50 @@ class PlaylistsService {
     };
     const result = await this._pool.query(query);
 
-    if (!result.rows[0].id) {
+    if (!result.rowCount) {
       throw new InvariantError('Playlist gagal ditambahkan');
     }
+    await this._cacheService.delete(`playlistOwner:${userId}`);
 
     return result.rows[0].id;
   }
 
   async getPlaylists(userId) {
-    const query = {
-      text: `
-      SELECT 
-        p.id, p.name, u.username 
-      FROM 
-        playlists p
-      LEFT JOIN
-        collaborations c
-      ON
-        p.id = c.playlist_id
-      INNER JOIN
-        users u
-      ON
-        p.owner = u.id
-      WHERE 
-        p.owner = $1
-      OR
-        c.user_id = $1
-      `,
-      values: [userId],
-    };
+    try {
+      const playlists = await this._cacheService.get(`playlistOwner:${userId}`);
+      return { playlists: JSON.parse(playlists), cache: true };
+    } catch (error) {
+      const query = {
+        text: `
+        SELECT 
+          p.id, p.name, u.username 
+        FROM 
+          playlists p
+        LEFT JOIN
+          collaborations c
+        ON
+          p.id = c.playlist_id
+        INNER JOIN
+          users u
+        ON
+          p.owner = u.id
+        WHERE 
+          p.owner = $1
+        OR
+          c.user_id = $1
+        `,
+        values: [userId],
+      };
 
-    const result = await this._pool.query(query);
+      const result = await this._pool.query(query);
 
-    return result.rows;
+      await this._cacheService.set(`playlistOwner:${userId}`, JSON.stringify(result.rows));
+
+      return { playlists: result.rows, cache: false };
+    }
   }
 
-  async deletePlaylistById({ playlistId }) {
+  async deletePlaylistById({ playlistId, userId }) {
     const query = {
       text: `
       DELETE FROM 
@@ -65,6 +74,8 @@ class PlaylistsService {
       values: [playlistId],
     };
     const result = await this._pool.query(query);
+
+    await this._cacheService.delete(`playlistOwner:${userId}`);
 
     if (!result.rowCount) {
       throw new InvariantError('Playlist gagal dihapus. Id tidak ditemukan');
@@ -102,11 +113,11 @@ class PlaylistsService {
         users u
       ON
         p.owner = u.id
-      INNER JOIN
+      LEFT JOIN
         playlist_songs ps
       ON
         p.id = ps.playlist_id
-      INNER JOIN
+      LEFT JOIN
         songs s
       ON
         ps.song_id = s.id

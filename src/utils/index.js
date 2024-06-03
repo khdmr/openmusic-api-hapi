@@ -1,17 +1,18 @@
-const mapDBAlbumToModel = (songs) => {
+const mapDBAlbumToModel = (albums) => {
   const mapSong = {
-    id: songs[0].id,
-    name: songs[0].name,
-    year: songs[0].year,
+    id: albums[0].id,
+    name: albums[0].name,
+    year: albums[0].year,
+    coverUrl: albums[0].cover,
     songs: [],
   };
 
-  songs.forEach((song) => {
-    if (song.songid !== null) {
+  albums.forEach((album) => {
+    if (album.songid !== null) {
       mapSong.songs.push({
-        id: song.songid,
-        title: song.title,
-        performer: song.performer,
+        id: album.songid,
+        title: album.title,
+        performer: album.performer,
       });
     }
   });
@@ -26,9 +27,8 @@ const mapDBPlaylistSongsToModel = (playlists) => {
     username: playlists[0].username,
     songs: [],
   };
-
   playlists.forEach((playlist) => {
-    if (playlist.id !== null) {
+    if (playlist.song_id !== null) {
       mapPlaylistSongs.songs.push({
         id: playlist.song_id,
         title: playlist.title,
