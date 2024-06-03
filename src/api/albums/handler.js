@@ -11,6 +11,7 @@ class AlbumsHandler {
     this.postAlbumCoverHandler = this.postAlbumCoverHandler.bind(this);
 
     this.postAlbumLikeHandler = this.postAlbumLikeHandler.bind(this);
+    this.getAlbumLikeHandler = this.getAlbumLikeHandler.bind(this);
   }
 
   async postAlbumHandler(request, h) {
@@ -99,14 +100,14 @@ class AlbumsHandler {
     const { id: albumId } = request.params;
     const { userId } = request.auth.credentials;
 
-    const albumName = await this._service.verifyAlbumIsExist(albumId);
+    await this._service.verifyAlbumIsExist(albumId);
 
     await this._service.verifyAlbumLike(albumId, userId);
     await this._service.addAlbumLike(albumId, userId);
 
     const response = h.response({
       status: 'success',
-      message: `Anda menyukai album ${albumName}`,
+      message: 'Anda menyukai album ini',
     });
     response.code(201);
     return response;
