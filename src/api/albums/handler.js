@@ -114,7 +114,7 @@ class AlbumsHandler {
     return response;
   }
 
-  async getAlbumLikeHandler(request, h) {
+  async getAlbumLikesHandler(request, h) {
     const { id: albumId } = request.params;
 
     await this._service.verifyAlbumIsExist(albumId);
