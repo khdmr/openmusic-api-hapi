@@ -11,7 +11,7 @@ class AlbumsHandler {
     this.postAlbumCoverHandler = this.postAlbumCoverHandler.bind(this);
 
     this.postAlbumLikeHandler = this.postAlbumLikeHandler.bind(this);
-    this.getAlbumLikeHandler = this.getAlbumLikeHandler.bind(this);
+    this.getAlbumLikesHandler = this.getAlbumLikesHandler.bind(this);
     this.deleteAlbumLikeHandler = this.deleteAlbumLikeHandler.bind(this);
   }
 
